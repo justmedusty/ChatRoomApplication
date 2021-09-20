@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Direct Message</title>
+
+    <link rel="stylesheet" href="css/websocket.css">
+</head>
+
+<body>
+
+<div class="main">
+    <div class="top">
+    </div>
+    <div class="box">
+        <div id="chatUserList" class="chat-list">
+            <div>
+                <div>
+                    <img class="chat-head" src="#"
+                         alt="">
+                    <div class="chat-rig">
+                        <p class="title"></p>
+                        <p class="text"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="box-right">
+            <div class="recvfrom">
+                <div class="news-top" id="chat-view">
+                    <ul id="chat">
+                        <div>
+                            <li>
+                                <div class="avatar"><img></div>
+                                <div class="msg">
+
+                                    <div class="msg-text">
+                                    </div>
+
+                                </div>
+                            </li>
+                        </div>
+                    </ul>
+                    <script type="text/javascript">
+                        $(function () {
+                            let chat = $("#chat-view");
+                            chat.scrollTop(chat[0].scrollHeight);
+                        })
+                    </script>
+                </div>
+            </div>
+            <div class="sendto">
+                <div class="but-text">
+                    <textarea id="message" name="" cols="110" rows="24" ></textarea>
+                    <button class="button">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+</script>
+</body>
+</html>
+
