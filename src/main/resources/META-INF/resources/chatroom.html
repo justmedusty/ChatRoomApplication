@@ -7,7 +7,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Direct Message</title>
 
-    <link rel="stylesheet" href="css/websocket.css">
+    <link rel="stylesheet" href="./css/websocket.css">
 </head>
 
 <body>
@@ -18,12 +18,20 @@
     <div class="box">
         <div id="chatUserList" class="chat-list">
             <div>
-                <div>
-                    <img class="chat-head" src="#"
-                         alt="">
+                <div class="list-box select">
+                    <img class="chat-head" src="images/hot.png"
+                         alt="pic lost">
                     <div class="chat-rig">
-                        <p class="title"></p>
-                        <p class="text"></p>
+                        <p class="title">Sample</p>
+                        <p class="text">I am the sample user</p>
+                    </div>
+                </div>
+                <div class="list-box">
+                    <img class="chat-head" src="images/google.png"
+                         alt="pic lost">
+                    <div class="chat-rig">
+                        <p class="title">Second Sample</p>
+                        <p class="text">I am the second sample user</p>
                     </div>
                 </div>
             </div>
@@ -33,13 +41,24 @@
                 <div class="news-top" id="chat-view">
                     <ul id="chat">
                         <div>
-                            <li>
-                                <div class="avatar"><img></div>
+                            <li class="self">
+                                <div class="avatar">
+                                    <img src="images/quarkus.png">
+                                </div>
                                 <div class="msg">
-
                                     <div class="msg-text">
+                                        Hello Quarkus
                                     </div>
-
+                                </div>
+                            </li>
+                            <li class="other">
+                                <div class="avatar">
+                                    <img src="images/springboot.png">
+                                </div>
+                                <div class="msg">
+                                    <div class="msg-text">
+                                        Hello Quarkus
+                                    </div>
                                 </div>
                             </li>
                         </div>
@@ -54,7 +73,7 @@
             </div>
             <div class="sendto">
                 <div class="but-text">
-                    <textarea id="message" name="" cols="110" rows="24" ></textarea>
+                    <textarea id="message" name="" placeholder="Write something..." cols="110" rows="24"></textarea>
                     <button class="button">Send</button>
                 </div>
             </div>
