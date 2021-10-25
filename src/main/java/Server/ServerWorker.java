@@ -8,7 +8,6 @@
 package Server;
 
 import io.smallrye.config.common.utils.StringUtil;
-
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -45,6 +44,7 @@ public class ServerWorker extends Thread {
      * @throws InterruptedException
      */
     private void handleClientSocket() throws IOException, InterruptedException {
+
         InputStream inputStream = clientSocket.getInputStream();
         this.outputStream = clientSocket.getOutputStream();
 
@@ -57,15 +57,18 @@ public class ServerWorker extends Thread {
 
             if (tokens != null && tokens.length > 0) {
                 String cmd = tokens[0];
-                if ("logoff".equals(cmd) || "quit".equalsIgnoreCase(line)) {
+                if ("logoff".equals(cmd) || "quit".equalsIgnoreCase(cmd)) {
                     handleLogoff();
+                    break;
+
                 } else if ("login".equalsIgnoreCase(cmd)) {
                     handleLogin(outputStream, tokens);
-                } else if ("msg".equals(cmd)){
+
+                } else if ("msg".equals(cmd)) {
                     String[] tokensMsg = StringUtil.split(line);
                     handleMessage(tokensMsg);
-                }else
-                {
+
+                } else {
                     String msg = "unknown " + cmd;
                     outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
                     outputStream.write(10);
@@ -75,7 +78,6 @@ public class ServerWorker extends Thread {
                 outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
                 outputStream.write(10);
                 */
-
         }
 
     }
@@ -84,9 +86,9 @@ public class ServerWorker extends Thread {
         String sendTo = tokens[1];
         String body = tokens[2];
         List<ServerWorker> workerList = server.getWorkerList();
-        for (ServerWorker worker : workerList){
-            if (sendTo.equals(worker.getLogin())){
-                String outMsg = "Message from " + worker.getLogin() + ": " + body  ;
+        for (ServerWorker worker : workerList) {
+            if (sendTo.equals(worker.getLogin())) {
+                String outMsg = "Message from " + worker.getLogin() + ": " + body;
                 worker.send(outMsg);
             }
 
@@ -95,13 +97,14 @@ public class ServerWorker extends Thread {
 
 
     private void handleLogoff() throws IOException {
-        server.removeWorker(this);
         List<ServerWorker> workerList = server.getWorkerList();
+        server.removeWorker(this);
         for (ServerWorker worker : workerList) {
             //makes sure to not send you your own offline message
             if (!login.equals(worker.getLogin())) {
                 worker.send(getLogin() + " is now offline");
             }
+
         }
         clientSocket.close();
     }
