@@ -2,39 +2,26 @@ package Server;
 
 /**
  * @Author Dustyn
- * @since Java 16
  * @version 1.0
+ * @since 16.0.2
  */
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.nio.charset.StandardCharsets;
 
 /**
- * A very simple server 
+ * A simple server that allows for multiple client connections, each connection is sent to a new instance of the class ServerWorker
  */
 public class ServerMain {
     public static void main(String[] args) {
         int port = 8085;
-        try {
-            ServerSocket serverSocket = new ServerSocket(port);
-            while (true) {
-                System.out.println("Server is about accept client connection");
-                Socket clientSocket = serverSocket.accept();
-                System.out.println("Server has accepted client connection from " +clientSocket);
-                OutputStream outputStream = clientSocket.getOutputStream();
-                outputStream.write("Hello there bud".getBytes(StandardCharsets.UTF_8));
-                clientSocket.close();
+        Server server = new Server(port);
+        server.start();
 
 
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
     }
 
 }
-    }
 
 
