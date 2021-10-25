@@ -50,6 +50,7 @@ public class ServerWorker extends Thread {
 
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String line;
+
         while ((line = reader.readLine()) != null) {
 
             String[] tokens = StringUtil.split(line);
@@ -60,24 +61,41 @@ public class ServerWorker extends Thread {
                     handleLogoff();
                 } else if ("login".equalsIgnoreCase(cmd)) {
                     handleLogin(outputStream, tokens);
-                } else {
+                } else if ("msg".equals(cmd)){
+                    String[] tokensMsg = StringUtil.split(line);
+                    handleMessage(tokensMsg);
+                }else
+                {
                     String msg = "unknown " + cmd;
                     outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
                     outputStream.write(10);
                 }
-                String msg = "You typed: " + line;
+            }
+               /* String msg = "You typed: " + line;
                 outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
                 outputStream.write(10);
+                */
 
+        }
 
+    }
+
+    private void handleMessage(String[] tokens) throws IOException {
+        String sendTo = tokens[1];
+        String body = tokens[2];
+        List<ServerWorker> workerList = server.getWorkerList();
+        for (ServerWorker worker : workerList){
+            if (sendTo.equals(worker.getLogin())){
+                String outMsg = "Message from " + worker.getLogin() + ": " + body  ;
+                worker.send(outMsg);
             }
 
         }
-        clientSocket.close();
     }
 
-    private void handleLogoff() throws IOException {
 
+    private void handleLogoff() throws IOException {
+        server.removeWorker(this);
         List<ServerWorker> workerList = server.getWorkerList();
         for (ServerWorker worker : workerList) {
             //makes sure to not send you your own offline message
@@ -127,5 +145,7 @@ public class ServerWorker extends Thread {
     //for sending messages to the client
     private void send(String msg) throws IOException {
         outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
+        outputStream.write(10);
+
     }
 }
