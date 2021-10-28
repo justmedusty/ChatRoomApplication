@@ -8,3 +8,9 @@ User & Server
 3. User -> User
     *direct messages
     *broadcast messages
+
+Commands:
+    login,<user>,<password>
+    logoff/quit
+    msg,<user>,msg
+    join,<topic>

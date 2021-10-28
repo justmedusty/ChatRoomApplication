@@ -11,6 +11,7 @@ import io.smallrye.config.common.utils.StringUtil;
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
 import java.util.List;
 
 public class ServerWorker extends Thread {
@@ -18,6 +19,7 @@ public class ServerWorker extends Thread {
     private final Socket clientSocket;
     private final Server server;
     private OutputStream outputStream;
+    private HashSet<String> topicSet = new HashSet<>();
     private String login = "null";
 
     public ServerWorker(Server server, Socket clientSocket) {
@@ -68,7 +70,14 @@ public class ServerWorker extends Thread {
                     String[] tokensMsg = StringUtil.split(line);
                     handleMessage(tokensMsg);
 
-                } else {
+                }
+                else if ("join".equalsIgnoreCase(cmd)){
+                    handleJoin(tokens);
+                }
+                else if ("leave".equalsIgnoreCase(cmd)){
+                    handleLeave(tokens);
+                }
+                else {
                     String msg = "unknown " + cmd;
                     outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
                     outputStream.write(10);
@@ -82,11 +91,45 @@ public class ServerWorker extends Thread {
 
     }
 
+    private void handleLeave(String[] tokens) {
+        if (tokens.length > 1){
+            String topic = tokens[1];
+            topicSet.remove(topic);
+        }
+    }
+
+    public boolean isMemberOfTopic(String topic){
+        return topicSet.contains(topic);
+
+    }
+
+    private void handleJoin(String[] tokens) {
+        if(tokens.length > 1){
+            String topic = tokens[1];
+            topicSet.add(topic);
+        }
+    }
+
+    //for sending private messages to another user
+    //format msg login body
+    //format msg topic body
     private void handleMessage(String[] tokens) throws IOException {
         String sendTo = tokens[1];
         String body = tokens[2];
+
+        boolean isTopic = sendTo.charAt(0) == '#';
+
         List<ServerWorker> workerList = server.getWorkerList();
         for (ServerWorker worker : workerList) {
+            if (isTopic){
+                if (worker.isMemberOfTopic(sendTo));{
+                    String outMsg = this.login + " to " + sendTo + ": " + body;
+                    worker.send(outMsg);
+                    outputStream.write(10);
+
+
+                }
+            }
             if (sendTo.equals(worker.getLogin())) {
                 String outMsg = "Message from " + worker.getLogin() + ": " + body;
                 worker.send(outMsg);
@@ -107,6 +150,7 @@ public class ServerWorker extends Thread {
 
         }
         clientSocket.close();
+        System.out.println("User has logged out successfully");
     }
 
 
@@ -120,7 +164,7 @@ public class ServerWorker extends Thread {
             String login = tokens[1];
             String password = tokens[2];
             //hardcoding values in for the time being
-            if ((login.equals("1") && password.equals("1")) || (login.equals("dustyn") && password.equals("dustyn"))) {
+            if ((login.equals("guest") && password.equals("guest")) || (login.equals("dustyn") && password.equals("dustyn"))) {
 
                 String msg = "Successful Login";
                 outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
