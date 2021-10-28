@@ -47,7 +47,7 @@ public class Server extends Thread {
         }
     }
 
-
+    //for removing worker when they quit/logoff
     public void removeWorker(ServerWorker serverWorker) {
         workerList.remove(serverWorker);
     }

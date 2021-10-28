@@ -1,5 +1,4 @@
 package Client;
-
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -46,7 +45,7 @@ public class ChatClient {
     }
     //
     private void login(String login,String password) throws IOException {
-        String cmd = "login," + login + "," + password;
+        String cmd = "login," + login + "," + password +"\n";
         serverOut.write(cmd.getBytes(StandardCharsets.UTF_8));
 
         String response = bufferedIn.readLine();

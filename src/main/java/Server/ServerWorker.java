@@ -8,11 +8,38 @@
 package Server;
 
 import io.smallrye.config.common.utils.StringUtil;
+
 import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.List;
+
+enum ServerCommand {
+    LOGOFF("logoff"),
+    QUIT("quit"),
+    LOGIN("login"),
+    MSG("msg"),
+    JOIN("join"),
+    LEAVE("leave");
+
+    private String command;
+
+    ServerCommand(String command) {
+        this.command = command;
+    }
+
+    public static ServerCommand fromString(String text) throws IllegalArgumentException {
+        for (ServerCommand cmd : ServerCommand.values()) {
+            if (cmd.command.equals(text)) {
+                return cmd;
+            }
+        }
+        throw new IllegalArgumentException("No ServerCommand with text " + text + " found");
+    }
+
+
+}
 
 public class ServerWorker extends Thread {
 
@@ -27,6 +54,7 @@ public class ServerWorker extends Thread {
         this.clientSocket = clientSocket;
         this.server = server;
     }
+
 
     @Override
     public void run() {
@@ -57,54 +85,55 @@ public class ServerWorker extends Thread {
 
             String[] tokens = StringUtil.split(line);
 
-            if (tokens != null && tokens.length > 0) {
-                String cmd = tokens[0];
-                if ("logoff".equals(cmd) || "quit".equalsIgnoreCase(cmd)) {
+            if (tokens == null || tokens.length == 0) {
+                return;
+            }
+
+            String cmdString = tokens[0];
+            ServerCommand cmd = ServerCommand.fromString(cmdString);
+            switch (cmd) {
+
+                case LOGOFF:
                     handleLogoff();
                     break;
-
-                } else if ("login".equalsIgnoreCase(cmd)) {
+                case QUIT:
+                    handleLogoff();
+                    break;
+                case LOGIN:
                     handleLogin(outputStream, tokens);
-
-                } else if ("msg".equals(cmd)) {
+                    break;
+                case MSG:
                     String[] tokensMsg = StringUtil.split(line);
                     handleMessage(tokensMsg);
-
-                }
-                else if ("join".equalsIgnoreCase(cmd)){
+                    break;
+                case JOIN:
                     handleJoin(tokens);
-                }
-                else if ("leave".equalsIgnoreCase(cmd)){
+                    break;
+                case LEAVE:
                     handleLeave(tokens);
-                }
-                else {
-                    String msg = "unknown " + cmd;
-                    outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
-                    outputStream.write(10);
-                }
+                    break;
             }
-               /* String msg = "You typed: " + line;
-                outputStream.write(msg.getBytes(StandardCharsets.UTF_8));
-                outputStream.write(10);
-                */
+
         }
+
 
     }
 
+
     private void handleLeave(String[] tokens) {
-        if (tokens.length > 1){
+        if (tokens.length > 1) {
             String topic = tokens[1];
             topicSet.remove(topic);
         }
     }
 
-    public boolean isMemberOfTopic(String topic){
+    public boolean isMemberOfTopic(String topic) {
         return topicSet.contains(topic);
 
     }
 
     private void handleJoin(String[] tokens) {
-        if(tokens.length > 1){
+        if (tokens.length > 1) {
             String topic = tokens[1];
             topicSet.add(topic);
         }
@@ -121,8 +150,9 @@ public class ServerWorker extends Thread {
 
         List<ServerWorker> workerList = server.getWorkerList();
         for (ServerWorker worker : workerList) {
-            if (isTopic){
-                if (worker.isMemberOfTopic(sendTo));{
+            if (isTopic) {
+                if (worker.isMemberOfTopic(sendTo)) ;
+                {
                     String outMsg = this.login + " to " + sendTo + ": " + body;
                     worker.send(outMsg);
                     outputStream.write(10);
@@ -195,4 +225,5 @@ public class ServerWorker extends Thread {
         outputStream.write(10);
 
     }
+
 }
