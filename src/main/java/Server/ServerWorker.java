@@ -92,30 +92,18 @@ public class ServerWorker extends Thread {
             String cmdString = tokens[0];
             ServerCommand cmd = ServerCommand.fromString(cmdString);
             switch (cmd) {
-
-                case LOGOFF:
-                    handleLogoff();
-                    break;
-                case QUIT:
-                    handleLogoff();
-                    break;
-                case LOGIN:
-                    handleLogin(outputStream, tokens);
-                    break;
-                case MSG:
+                case LOGOFF -> handleLogoff();
+                case QUIT -> handleLogoff();
+                case LOGIN -> handleLogin(outputStream, tokens);
+                case JOIN -> handleJoin(tokens);
+                case LEAVE -> handleLeave(tokens);
+                case MSG -> {
                     String[] tokensMsg = StringUtil.split(line);
                     handleMessage(tokensMsg);
-                    break;
-                case JOIN:
-                    handleJoin(tokens);
-                    break;
-                case LEAVE:
-                    handleLeave(tokens);
-                    break;
             }
 
         }
-
+}
 
     }
 
